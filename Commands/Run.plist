@@ -30,6 +30,10 @@ Dir.chdir(File.dirname(ENV["TM_MAKE_FILE"]))
 
 dirs = [ENV['TM_PROJECT_DIRECTORY']]
 TextMate::Executor.run("make", flags, :verb =&gt; "Making") do |line, type|
+  line.gsub!(/\[\s*(\d+)%\s*\]\s*/) do
+    puts "&lt;script&gt;if(typeof(TextMate.progress) != 'undefined'){TextMate.progress = #{$1.to_f / 100};}&lt;/script&gt;"
+    ""
+  end
   if line =~ /^make.*?: Entering directory `(.*?)'$/ and not $1.nil? and File.directory?($1)
     dirs.unshift($1)
     ""
